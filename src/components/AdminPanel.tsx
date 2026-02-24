@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Project, Category, categories, getProjects, saveProjects } from "@/lib/projectsData";
-import { X, Plus, Pencil, Trash2, Settings } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { X, Plus, Pencil, Trash2, Settings, LogOut } from "lucide-react";
 
 const emptyProject: Omit<Project, "id"> = {
   title: "",
@@ -12,10 +14,26 @@ const emptyProject: Omit<Project, "id"> = {
 };
 
 const AdminPanel = () => {
+  const { user, isAdmin, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>(getProjects());
   const [editing, setEditing] = useState<Project | null>(null);
   const [form, setForm] = useState<Omit<Project, "id">>(emptyProject);
+
+  // Don't show the admin button if not logged in or not admin
+  if (loading) return null;
+  if (!user || !isAdmin) {
+    return (
+      <button
+        onClick={() => navigate("/login")}
+        className="fixed bottom-6 right-6 z-40 rounded-full bg-primary p-4 text-primary-foreground shadow-lg transition-all hover:scale-110 hover:shadow-[0_4px_30px_hsl(var(--primary)/0.5)]"
+        aria-label="Se connecter"
+      >
+        <Settings className="h-6 w-6" />
+      </button>
+    );
+  }
 
   const save = (updated: Project[]) => {
     setProjects(updated);
@@ -55,13 +73,22 @@ const AdminPanel = () => {
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 rounded-full bg-primary p-4 text-primary-foreground shadow-lg transition-all hover:scale-110 hover:shadow-[0_4px_30px_hsl(var(--primary)/0.5)]"
-        aria-label="Ouvrir le panneau admin"
-      >
-        <Settings className="h-6 w-6" />
-      </button>
+      <div className="fixed bottom-6 right-6 z-40 flex gap-2">
+        <button
+          onClick={() => signOut()}
+          className="rounded-full bg-secondary p-3 text-secondary-foreground shadow-lg transition-all hover:scale-110"
+          aria-label="Se déconnecter"
+        >
+          <LogOut className="h-5 w-5" />
+        </button>
+        <button
+          onClick={() => setOpen(true)}
+          className="rounded-full bg-primary p-4 text-primary-foreground shadow-lg transition-all hover:scale-110 hover:shadow-[0_4px_30px_hsl(var(--primary)/0.5)]"
+          aria-label="Ouvrir le panneau admin"
+        >
+          <Settings className="h-6 w-6" />
+        </button>
+      </div>
     );
   }
 
@@ -71,13 +98,17 @@ const AdminPanel = () => {
       <div className="relative ml-auto h-full w-full max-w-lg overflow-y-auto bg-card shadow-2xl">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card p-6">
           <h2 className="font-heading text-xl font-bold text-foreground">Administration</h2>
-          <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => signOut()} className="text-muted-foreground hover:text-foreground" title="Déconnexion">
+              <LogOut className="h-5 w-5" />
+            </button>
+            <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         <div className="p-6">
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <h3 className="font-heading text-lg font-semibold text-foreground">
               {editing ? "Modifier le projet" : "Ajouter un projet"}
@@ -161,7 +192,6 @@ const AdminPanel = () => {
             </div>
           </form>
 
-          {/* Project List */}
           <div className="mt-8 space-y-3">
             <h3 className="font-heading text-lg font-semibold text-foreground">
               Projets ({projects.length})
