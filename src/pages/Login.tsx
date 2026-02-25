@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { LogIn, UserPlus, ArrowLeft } from "lucide-react";
 
 const Login = () => {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, requestPasswordReset } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,6 +28,24 @@ const Login = () => {
       if (error) setError(error.message);
       else navigate("/");
     }
+    setLoading(false);
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setError("Veuillez entrer votre email pour réinitialiser le mot de passe.");
+      setMessage("");
+      return;
+    }
+
+    setError("");
+    setMessage("");
+    setLoading(true);
+
+    const { error } = await requestPasswordReset(email);
+    if (error) setError(error.message);
+    else setMessage("Si un compte existe, un email de réinitialisation vient d’être envoyé.");
+
     setLoading(false);
   };
 
@@ -68,6 +86,17 @@ const Login = () => {
               minLength={6}
               className="w-full rounded-md border border-border bg-secondary px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
+
+            {!isSignUp && (
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={loading}
+                className="w-full text-left font-body text-sm text-muted-foreground transition-colors hover:text-primary disabled:opacity-50"
+              >
+                Mot de passe oublié ?
+              </button>
+            )}
 
             {error && <p className="font-body text-sm text-destructive">{error}</p>}
             {message && <p className="font-body text-sm text-primary">{message}</p>}
