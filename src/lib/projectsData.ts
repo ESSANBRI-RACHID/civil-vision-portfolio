@@ -6,6 +6,11 @@ import projectTunnel from "@/assets/project-tunnel.jpg";
 
 export type Category = "Pont" | "Bâtiment" | "Barrage" | "Route" | "Tunnel";
 
+export interface ProjectImage {
+  url: string;
+  description: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -13,6 +18,7 @@ export interface Project {
   image: string;
   shortDescription: string;
   fullDescription: string;
+  additionalImages?: ProjectImage[];
   metadata: {
     longueur?: string;
     budget?: string;
