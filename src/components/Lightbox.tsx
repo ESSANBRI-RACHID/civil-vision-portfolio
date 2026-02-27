@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Project } from "@/lib/projectsData";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -12,6 +12,18 @@ interface LightboxProps {
 }
 
 const Lightbox = ({ project, onClose, onPrev, onNext, hasPrev, hasNext }: LightboxProps) => {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const allImages = [
+    { url: project.image, description: "" },
+    ...(project.additionalImages || []),
+  ];
+
+  // Reset image index when project changes
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [project.id]);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -41,14 +53,44 @@ const Lightbox = ({ project, onClose, onPrev, onNext, hasPrev, hasNext }: Lightb
         className="lightbox-enter glass relative z-10 flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl md:flex-row"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Image */}
-        <div className="relative aspect-video w-full md:aspect-auto md:w-1/2">
-          <img
-            src={project.image}
-            alt={project.title}
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/30 hidden md:block" />
+        {/* Image + Gallery */}
+        <div className="relative w-full md:w-1/2 flex flex-col">
+          <div className="relative aspect-video flex-shrink-0">
+            <img
+              src={allImages[activeImageIndex].url}
+              alt={project.title}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-card/30 hidden md:block" />
+          </div>
+
+          {/* Image description */}
+          {allImages[activeImageIndex].description && (
+            <div className="bg-secondary/80 px-4 py-2">
+              <p className="font-body text-xs text-muted-foreground italic">
+                {allImages[activeImageIndex].description}
+              </p>
+            </div>
+          )}
+
+          {/* Thumbnails */}
+          {allImages.length > 1 && (
+            <div className="flex gap-1.5 overflow-x-auto bg-card/80 p-2">
+              {allImages.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImageIndex(i)}
+                  className={`h-12 w-16 flex-shrink-0 overflow-hidden rounded transition-all ${
+                    i === activeImageIndex
+                      ? "ring-2 ring-primary ring-offset-1 ring-offset-card"
+                      : "opacity-60 hover:opacity-100"
+                  }`}
+                >
+                  <img src={img.url} alt={`Photo ${i + 1}`} className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Content */}

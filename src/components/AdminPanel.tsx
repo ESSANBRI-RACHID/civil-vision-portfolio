@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Project, Category, categories, getProjects, saveProjects } from "@/lib/projectsData";
+import { Project, ProjectImage, Category, categories, getProjects, saveProjects } from "@/lib/projectsData";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { X, Plus, Pencil, Trash2, Settings, LogOut } from "lucide-react";
+import { X, Plus, Pencil, Trash2, Settings, LogOut, ImagePlus } from "lucide-react";
 
 const emptyProject: Omit<Project, "id"> = {
   title: "",
@@ -10,6 +10,7 @@ const emptyProject: Omit<Project, "id"> = {
   image: "",
   shortDescription: "",
   fullDescription: "",
+  additionalImages: [],
   metadata: { longueur: "", budget: "", duree: "", client: "", localisation: "" },
 };
 
@@ -21,7 +22,6 @@ const AdminPanel = () => {
   const [editing, setEditing] = useState<Project | null>(null);
   const [form, setForm] = useState<Omit<Project, "id">>(emptyProject);
 
-  // Don't show the admin button if not logged in or not admin
   if (loading) return null;
   if (!user || !isAdmin) {
     return (
@@ -56,7 +56,7 @@ const AdminPanel = () => {
   const handleEdit = (p: Project) => {
     setEditing(p);
     const { id, ...rest } = p;
-    setForm(rest);
+    setForm({ ...rest, additionalImages: rest.additionalImages || [] });
   };
 
   const handleDelete = (id: string) => {
@@ -69,6 +69,38 @@ const AdminPanel = () => {
     const reader = new FileReader();
     reader.onloadend = () => setForm({ ...form, image: reader.result as string });
     reader.readAsDataURL(file);
+  };
+
+  const handleAdditionalImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newImg: ProjectImage = { url: reader.result as string, description: "" };
+      setForm({ ...form, additionalImages: [...(form.additionalImages || []), newImg] });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const updateAdditionalImage = (index: number, updates: Partial<ProjectImage>) => {
+    const imgs = [...(form.additionalImages || [])];
+    imgs[index] = { ...imgs[index], ...updates };
+    setForm({ ...form, additionalImages: imgs });
+  };
+
+  const replaceAdditionalImage = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      updateAdditionalImage(index, { url: reader.result as string });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeAdditionalImage = (index: number) => {
+    const imgs = (form.additionalImages || []).filter((_, i) => i !== index);
+    setForm({ ...form, additionalImages: imgs });
   };
 
   if (!open) {
@@ -134,7 +166,7 @@ const AdminPanel = () => {
 
             <div>
               <label className="mb-1 block font-body text-xs uppercase tracking-wider text-muted-foreground">
-                Image
+                Image principale
               </label>
               <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full font-body text-sm text-muted-foreground file:mr-3 file:rounded-sm file:border-0 file:bg-primary/20 file:px-3 file:py-1 file:text-xs file:text-primary" />
               {form.image && (
@@ -172,6 +204,49 @@ const AdminPanel = () => {
               ))}
             </div>
 
+            {/* Additional Images Section */}
+            <div className="space-y-3">
+              <label className="block font-body text-xs uppercase tracking-wider text-muted-foreground">
+                Photos supplémentaires
+              </label>
+
+              {(form.additionalImages || []).map((img, index) => (
+                <div key={index} className="rounded-md border border-border bg-secondary/50 p-3 space-y-2">
+                  <div className="flex items-start gap-2">
+                    <img src={img.url} alt={`Photo ${index + 1}`} className="h-16 w-24 rounded object-cover flex-shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <textarea
+                        placeholder="Description de la photo..."
+                        value={img.description}
+                        onChange={(e) => updateAdditionalImage(index, { description: e.target.value })}
+                        className="w-full rounded-md border border-border bg-secondary px-3 py-1.5 font-body text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        rows={2}
+                      />
+                      <div className="flex gap-2">
+                        <label className="cursor-pointer rounded bg-primary/20 px-2 py-1 font-body text-xs text-primary hover:bg-primary/30 transition-colors">
+                          Remplacer
+                          <input type="file" accept="image/*" onChange={(e) => replaceAdditionalImage(index, e)} className="hidden" />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => removeAdditionalImage(index)}
+                          className="rounded bg-destructive/20 px-2 py-1 font-body text-xs text-destructive hover:bg-destructive/30 transition-colors"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border p-3 text-muted-foreground transition-colors hover:border-primary hover:text-primary">
+                <ImagePlus className="h-4 w-4" />
+                <span className="font-body text-xs">Ajouter une photo</span>
+                <input type="file" accept="image/*" onChange={handleAdditionalImageUpload} className="hidden" />
+              </label>
+            </div>
+
             <div className="flex gap-3">
               <button
                 type="submit"
@@ -206,7 +281,9 @@ const AdminPanel = () => {
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="truncate font-body text-sm font-medium text-foreground">{p.title}</p>
-                  <p className="font-body text-xs text-muted-foreground">{p.category}</p>
+                  <p className="font-body text-xs text-muted-foreground">
+                    {p.category} · {(p.additionalImages || []).length + 1} photo(s)
+                  </p>
                 </div>
                 <button onClick={() => handleEdit(p)} className="text-muted-foreground hover:text-primary">
                   <Pencil className="h-4 w-4" />
