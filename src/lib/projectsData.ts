@@ -4,7 +4,7 @@ import projectDam from "@/assets/project-dam.jpg";
 import projectRoad from "@/assets/project-road.jpg";
 import projectTunnel from "@/assets/project-tunnel.jpg";
 
-export type Category = "Pont" | "Bâtiment" | "Barrage" | "Route" | "Tunnel";
+export type Category = string;
 
 export interface ProjectImage {
   url: string;
@@ -29,6 +29,9 @@ export interface Project {
 }
 
 const STORAGE_KEY = "gc-portfolio-projects";
+const CATEGORIES_STORAGE_KEY = "gc-portfolio-categories";
+
+const defaultCategories: string[] = ["Pont", "Bâtiment", "Barrage", "Route", "Tunnel"];
 
 const defaultProjects: Project[] = [
   {
@@ -94,4 +97,20 @@ export const saveProjects = (projects: Project[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
 };
 
-export const categories: Category[] = ["Pont", "Bâtiment", "Barrage", "Route", "Tunnel"];
+export const getCategories = (): string[] => {
+  const stored = localStorage.getItem(CATEGORIES_STORAGE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return defaultCategories;
+    }
+  }
+  return defaultCategories;
+};
+
+export const saveCategories = (cats: string[]) => {
+  localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(cats));
+};
+
+export const categories: string[] = defaultCategories;

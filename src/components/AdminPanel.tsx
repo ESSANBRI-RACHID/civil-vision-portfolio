@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Project, ProjectImage, Category, categories, getProjects, saveProjects } from "@/lib/projectsData";
+import { Project, ProjectImage, Category, getProjects, saveProjects, getCategories, saveCategories } from "@/lib/projectsData";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
-import { X, Plus, Pencil, Trash2, Settings, LogOut, ImagePlus } from "lucide-react";
+import { X, Plus, Pencil, Trash2, Settings, LogOut, ImagePlus, Tag } from "lucide-react";
 
 const emptyProject: Omit<Project, "id"> = {
   title: "",
-  category: "Pont",
+  category: "",
   image: "",
   shortDescription: "",
   fullDescription: "",
@@ -21,6 +21,9 @@ const AdminPanel = () => {
   const [projects, setProjects] = useState<Project[]>(getProjects());
   const [editing, setEditing] = useState<Project | null>(null);
   const [form, setForm] = useState<Omit<Project, "id">>(emptyProject);
+  const [cats, setCats] = useState<string[]>(getCategories());
+  const [newCat, setNewCat] = useState("");
+  const [showCatManager, setShowCatManager] = useState(false);
 
   if (loading) return null;
   if (!user || !isAdmin) {
@@ -142,9 +145,76 @@ const AdminPanel = () => {
 
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <h3 className="font-heading text-lg font-semibold text-foreground">
-              {editing ? "Modifier le projet" : "Ajouter un projet"}
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-heading text-lg font-semibold text-foreground">
+                {editing ? "Modifier le projet" : "Ajouter un projet"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowCatManager(!showCatManager)}
+                className="flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 font-body text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Tag className="h-3.5 w-3.5" />
+                Catégories
+              </button>
+            </div>
+
+            {showCatManager && (
+              <div className="rounded-md border border-border bg-secondary/30 p-4 space-y-3">
+                <h4 className="font-body text-xs uppercase tracking-wider text-muted-foreground">Gérer les catégories</h4>
+                <div className="flex flex-wrap gap-2">
+                  {cats.map((cat) => (
+                    <span key={cat} className="flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 font-body text-xs text-primary">
+                      {cat}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = cats.filter((c) => c !== cat);
+                          setCats(updated);
+                          saveCategories(updated);
+                        }}
+                        className="ml-1 text-destructive hover:text-destructive/80"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    placeholder="Nouvelle catégorie..."
+                    value={newCat}
+                    onChange={(e) => setNewCat(e.target.value)}
+                    className="flex-1 rounded-md border border-border bg-secondary px-3 py-1.5 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (newCat.trim() && !cats.includes(newCat.trim())) {
+                          const updated = [...cats, newCat.trim()];
+                          setCats(updated);
+                          saveCategories(updated);
+                          setNewCat("");
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (newCat.trim() && !cats.includes(newCat.trim())) {
+                        const updated = [...cats, newCat.trim()];
+                        setCats(updated);
+                        saveCategories(updated);
+                        setNewCat("");
+                      }
+                    }}
+                    className="rounded-md bg-primary px-3 py-1.5 font-body text-xs text-primary-foreground hover:bg-primary/80 transition-colors"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
 
             <input
               placeholder="Titre du projet"
@@ -159,7 +229,8 @@ const AdminPanel = () => {
               onChange={(e) => setForm({ ...form, category: e.target.value as Category })}
               className="w-full rounded-md border border-border bg-secondary px-4 py-2 font-body text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              {categories.map((c) => (
+              <option value="">-- Catégorie --</option>
+              {cats.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>

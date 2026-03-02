@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
-import { Project, Category, categories, getProjects } from "@/lib/projectsData";
+import { Project, Category, getProjects, getCategories } from "@/lib/projectsData";
 import ProjectCard from "./ProjectCard";
 import Lightbox from "./Lightbox";
 
 const ProjectGallery = () => {
   const projects = useMemo(() => getProjects(), []);
+  const cats = useMemo(() => getCategories(), []);
   const [activeFilter, setActiveFilter] = useState<Category | "Tous">("Tous");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -30,7 +31,7 @@ const ProjectGallery = () => {
 
         {/* Filters */}
         <div className="mt-8 flex flex-wrap gap-3">
-          {["Tous", ...categories].map((cat) => (
+          {["Tous", ...cats].map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveFilter(cat as Category | "Tous")}
