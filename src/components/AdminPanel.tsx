@@ -3,6 +3,7 @@ import { Project, ProjectImage, Category, getProjects, saveProjects, getCategori
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { X, Plus, Pencil, Trash2, Settings, LogOut, ImagePlus, Tag } from "lucide-react";
+import AdminSocialLinks from "./AdminSocialLinks";
 
 const emptyProject: Omit<Project, "id"> = {
   title: "",
@@ -158,6 +159,8 @@ const AdminPanel = () => {
                 Catégories
               </button>
             </div>
+
+            <AdminSocialLinks />
 
             {showCatManager && (
               <div className="rounded-md border border-border bg-secondary/30 p-4 space-y-3">
