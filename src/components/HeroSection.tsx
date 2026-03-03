@@ -1,12 +1,12 @@
-import heroBridge from "@/assets/hero-bridge.jpg";
+import coverMarrakech from "@/assets/cover-marrakech.jpg";
 
 const HeroSection = () => {
   return (
     <header className="relative h-screen w-full overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src={heroBridge}
-          alt="Pont architectural moderne"
+          src={coverMarrakech}
+          alt="Génie civil et construction à Marrakech, Maroc"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background" />
