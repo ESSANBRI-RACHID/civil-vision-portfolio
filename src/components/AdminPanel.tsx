@@ -4,6 +4,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { X, Plus, Pencil, Trash2, Settings, LogOut, ImagePlus, Tag } from "lucide-react";
 import AdminSocialLinks from "./AdminSocialLinks";
+import AdminHeroSettings from "./AdminHeroSettings";
+import AdminStatsSettings from "./AdminStatsSettings";
+import AdminContactSettings from "./AdminContactSettings";
 
 const emptyProject: Omit<Project, "id"> = {
   title: "",
@@ -160,6 +163,9 @@ const AdminPanel = () => {
               </button>
             </div>
 
+            <AdminHeroSettings />
+            <AdminStatsSettings />
+            <AdminContactSettings />
             <AdminSocialLinks />
 
             {showCatManager && (
