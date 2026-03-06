@@ -1,16 +1,32 @@
+import { useState, useEffect } from "react";
 import { getHeroSettings } from "@/lib/siteSettingsData";
+import coverMarrakech from "@/assets/cover-marrakech.jpg";
 
 const HeroSection = () => {
   const hero = getHeroSettings();
+  const images = [hero.image, coverMarrakech];
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   return (
     <header className="relative h-screen w-full overflow-hidden">
       <div className="absolute inset-0">
-        <img
-          src={hero.image}
-          alt="Pont architectural moderne"
-          className="h-full w-full object-cover"
-        />
+        {images.map((src, i) => (
+          <img
+            key={i}
+            src={src}
+            alt="Projet de génie civil"
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+              i === currentIndex ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background" />
       </div>
 
