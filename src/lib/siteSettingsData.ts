@@ -43,7 +43,7 @@ const defaultStats: StatItem[] = [
 
 const defaultContact: ContactInfo = {
   phone: "+212 5 22 00 00 00",
-  email: "contact@excellence-structurelle.ma",
+  email: "contact@rayak.ma",
   address: "123 Boulevard Mohammed V, Casablanca, Maroc",
   hours: "Lun - Ven : 8h00 - 18h00",
 };
