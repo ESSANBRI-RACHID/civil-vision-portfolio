@@ -12,11 +12,11 @@ const Footer = () => {
     <footer className="border-t border-border bg-card px-6 py-12">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 md:flex-row md:justify-between">
         <div className="text-center md:text-left">
-          <h3 className="font-heading text-xl font-semibold text-foreground">
-            Excellence <span className="text-gradient">Structurelle</span>
+          <h3 className="font-heading text-2xl font-bold tracking-widest text-foreground">
+            RAY<span className="text-gradient">AK</span>
           </h3>
           <p className="mt-1 font-body text-sm text-muted-foreground">
-            Ingénierie de génie civil d'exception
+            Ingénierie & Construction d'exception
           </p>
         </div>
 
