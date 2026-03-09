@@ -1,3 +1,4 @@
+import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import ProjectGallery from "@/components/ProjectGallery";
 import StatsSection from "@/components/StatsSection";
@@ -8,6 +9,7 @@ import AdminPanel from "@/components/AdminPanel";
 const Index = () => {
   return (
     <main className="min-h-screen bg-background">
+      <Navbar />
       <HeroSection />
       <ProjectGallery />
       <StatsSection />

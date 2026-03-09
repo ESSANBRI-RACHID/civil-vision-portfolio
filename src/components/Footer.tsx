@@ -1,5 +1,6 @@
 import { Facebook, Instagram, Linkedin, Youtube, Twitter, Music2 } from "lucide-react";
 import { getSocialLinks, SocialLink } from "@/lib/socialLinksData";
+import RayakLogo from "./RayakLogo";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Facebook, Instagram, Linkedin, Youtube, Twitter, Music2,
@@ -12,10 +13,8 @@ const Footer = () => {
     <footer className="border-t border-border bg-card px-6 py-12">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 md:flex-row md:justify-between">
         <div className="text-center md:text-left">
-          <h3 className="font-heading text-2xl font-bold tracking-widest text-foreground">
-            RAY<span className="text-gradient">AK</span>
-          </h3>
-          <p className="mt-1 font-body text-sm text-muted-foreground">
+          <RayakLogo size="md" />
+          <p className="mt-2 font-body text-sm text-muted-foreground">
             Ingénierie & Construction d'exception
           </p>
         </div>
