@@ -7,6 +7,7 @@ import AdminSocialLinks from "./AdminSocialLinks";
 import AdminHeroSettings from "./AdminHeroSettings";
 import AdminStatsSettings from "./AdminStatsSettings";
 import AdminContactSettings from "./AdminContactSettings";
+import AdminMessages from "./AdminMessages";
 
 const emptyProject: Omit<Project, "id"> = {
   title: "",
@@ -163,6 +164,7 @@ const AdminPanel = () => {
               </button>
             </div>
 
+            <AdminMessages />
             <AdminHeroSettings />
             <AdminStatsSettings />
             <AdminContactSettings />
