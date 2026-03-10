@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { getHeroSettings, saveHeroSettings, HeroSettings } from "@/lib/siteSettingsData";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Save } from "lucide-react";
+import { toast } from "@/components/ui/sonner";
 
 const AdminHeroSettings = () => {
   const [hero, setHero] = useState<HeroSettings>(getHeroSettings());
+  const [dirty, setDirty] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -24,13 +26,18 @@ const AdminHeroSettings = () => {
         canvas.height = h;
         canvas.getContext("2d")?.drawImage(img, sx, sy, w, h, 0, 0, w, h);
         const url = canvas.toDataURL("image/jpeg", 0.85);
-        const updated = { ...hero, image: url };
-        setHero(updated);
-        saveHeroSettings(updated);
+        setHero((prev) => ({ ...prev, image: url }));
+        setDirty(true);
       };
       img.src = reader.result as string;
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleSave = () => {
+    saveHeroSettings(hero);
+    setDirty(false);
+    toast.success("Image Hero enregistrée");
   };
 
   return (
@@ -45,6 +52,15 @@ const AdminHeroSettings = () => {
         <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
       </label>
       <p className="font-body text-[10px] text-muted-foreground">Recadrage automatique 8:5</p>
+      <button
+        type="button"
+        onClick={handleSave}
+        disabled={!dirty}
+        className="flex items-center gap-1.5 rounded-md bg-primary px-4 py-1.5 font-body text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <Save className="h-3.5 w-3.5" />
+        Enregistrer
+      </button>
     </div>
   );
 };
