@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { getStats, saveStats, StatItem } from "@/lib/siteSettingsData";
+import { Save } from "lucide-react";
+import { toast } from "@/components/ui/sonner";
 
 const AdminStatsSettings = () => {
   const [stats, setStats] = useState<StatItem[]>(getStats());
+  const [dirty, setDirty] = useState(false);
 
   const update = (id: string, field: keyof StatItem, value: string | number) => {
-    const updated = stats.map((s) => (s.id === id ? { ...s, [field]: value } : s));
-    setStats(updated);
-    saveStats(updated);
+    setStats((prev) => prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
+    setDirty(true);
+  };
+
+  const handleSave = () => {
+    saveStats(stats);
+    setDirty(false);
+    toast.success("Compteurs enregistrés");
   };
 
   return (
@@ -37,6 +45,15 @@ const AdminStatsSettings = () => {
           </div>
         </div>
       ))}
+      <button
+        type="button"
+        onClick={handleSave}
+        disabled={!dirty}
+        className="flex items-center gap-1.5 rounded-md bg-primary px-4 py-1.5 font-body text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/80 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <Save className="h-3.5 w-3.5" />
+        Enregistrer
+      </button>
     </div>
   );
 };
