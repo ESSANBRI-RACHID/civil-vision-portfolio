@@ -164,6 +164,7 @@ const AdminPanel = () => {
               </button>
             </div>
 
+            <AdminMessages />
             <AdminHeroSettings />
             <AdminStatsSettings />
             <AdminContactSettings />
