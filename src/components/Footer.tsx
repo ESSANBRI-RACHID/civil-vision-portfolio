@@ -39,7 +39,7 @@ const Footer = () => {
         </div>
 
         <p className="font-body text-xs text-muted-foreground">
-          © {new Date().getFullYear()} RAYAK. Tous droits réservés.
+          © {new Date().getFullYear()} ESSANBRI. Tous droits réservés.
         </p>
       </div>
     </footer>

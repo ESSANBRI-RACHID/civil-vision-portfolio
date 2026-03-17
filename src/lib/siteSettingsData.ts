@@ -29,7 +29,7 @@ export interface ContactInfo {
 const defaultHero: HeroSettings = {
   image: coverMarrakech,
   subtitle: "Ingénierie & Construction",
-  title1: "RAYAK",
+  title1: "ESSANBRI",
   title2: "Construction",
   description: "Portfolio de projets de génie civil — ponts, bâtiments, barrages, routes et tunnels conçus avec précision et passion.",
 };
@@ -43,7 +43,7 @@ const defaultStats: StatItem[] = [
 
 const defaultContact: ContactInfo = {
   phone: "+212 5 22 00 00 00",
-  email: "contact@rayak.ma",
+  email: "contact@essanbri.ma",
   address: "123 Boulevard Mohammed V, Casablanca, Maroc",
   hours: "Lun - Ven : 8h00 - 18h00",
 };
