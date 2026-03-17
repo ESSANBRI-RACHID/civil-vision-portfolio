@@ -29,7 +29,7 @@ export interface ContactInfo {
 const defaultHero: HeroSettings = {
   image: coverMarrakech,
   subtitle: "Ingénierie & Construction",
-  title1: "RAYAK",
+  title1: "ESSANBRI",
   title2: "Construction",
   description: "Portfolio de projets de génie civil — ponts, bâtiments, barrages, routes et tunnels conçus avec précision et passion.",
 };
